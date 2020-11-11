@@ -1,0 +1,30 @@
+name: Shell Commands
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-16.04
+    strategy:
+      matrix:
+        go: [ '1.14' ]
+    name: Go ${{ matrix.go }} sample
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup go
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go }}
+      #- run: go run hello.go
+      - name: Checkout a repo 
+        uses: actions/checkout@v2
+        with:
+          repository: blackhatethicalhacking/subzy
+      - name: setup subzy
+        run: |
+          go get -u -v github.com/lukasikic/subzy
+          go install -v github.com/lukasikic/subzy
+          go build subzy.go
+          pwd
+          ./subzy -target test.google.com,https://test.yahoo.com
+          ./subzy -https -targets staticdnslist.txt

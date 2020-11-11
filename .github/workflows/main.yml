@@ -1,0 +1,53 @@
+name: An introductory GitHub Action
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the master branch
+  push:
+
+jobs:
+  build:
+    name: Hello world action
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      # Looks for action in <PROJECT_ROOT_DIRECTORY>/action-a
+      - uses: ./action-a
+        # Set a secret from GitHub
+        env:
+          MY_NAME: ${{secrets.MY_COMPANY}}
+
+#*******USE THIS PUBLISH IMAGE TP GITHUB REPO
+# name: Publish Docker image
+# on:
+#   release:
+#     types: [published]
+# jobs:
+  push_to_registry:
+   name: Push Docker image to GitHub Packages
+   runs-on: ubuntu-latest
+   steps:
+#      - name: Check out the repo
+#        uses: actions/checkout@v2
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v2
+        with:
+           username: ${{ github.actor }}
+           password: ${{ secrets.REPO_TOKEN }}
+           registry: docker.pkg.github.com
+           repository: DamionWaltermeyer/github-actions-test/my-first-image
+           tag_with_ref: true
+
+
+
+#USE THIS TO SCAN IMAGE AND THEN PUBLISH IMAGE FOR THE NEXT STAGE.
+
+# Container scan of an image available locally or publically available on dockerhub
+# - uses: azure/container-scan@v0
+#   with:
+#     image-name: my-image
+# Container scan of an image available on a private registry
+# - uses: azure/container-scan@v0
+#   with:
+#     image-name: loginServerUrl/my-image # loginServerlUrl would be empty if it's hosted on dockerhub
+#     username: ${{ secrets.DOCKER_USERNAME }}
+#     password: ${{ secrets.DOCKER_PASSWORD }}
